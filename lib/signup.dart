@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'child_setup.dart';
 
 class signup extends StatefulWidget {
   const signup({super.key});
@@ -17,10 +19,29 @@ class _signupState extends State<signup> {
   TextEditingController email=TextEditingController();
   TextEditingController password=TextEditingController();
 
+  //Function to create a new user in firebase
   signup()async{
-    await FirebaseAuth.instance.createUserWithEmailAndPassword(email: email.text, password: password.text);
-    Get.offAll(wrapper());
+    try {
+  //create a new user in Firebase and add them to firestore
+      UserCredential userCred = await FirebaseAuth.instance.createUserWithEmailAndPassword(email: email.text.trim(), password: password.text.trim());
+
+  // Save the user's info in Firestore under "users" collection
+    await FirebaseFirestore.instance.collection('users').doc(userCred.user!.uid).set({'email': email.text.trim(), 'createdAt': FieldValue.serverTimestamp(),});
+
+  //After signing up go to ChildSetup screen
+    Get.offAll(() => const ChildSetup());
+  } on FirebaseAuthException catch (e) {
+  // Show Firebase errors (like invalid email or weak password)
+  ScaffoldMessenger.of(context).showSnackBar(
+  SnackBar(content: Text(e.message ?? "Signup failed")),
+  );
+  } catch (e) {
+  //unexpected errors
+  ScaffoldMessenger.of(context).showSnackBar(
+  SnackBar(content: Text("Unexpected error: $e")),
+  );
   }
+}
 
   @override
   Widget build(BuildContext context) {

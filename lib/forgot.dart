@@ -15,7 +15,7 @@ class _ForgotState extends State<Forgot> {
 
   TextEditingController email=TextEditingController();
 
-
+//Sends reset email through firebase
   reset()async{
     await FirebaseAuth.instance.sendPasswordResetEmail(email: email.text);
   }
