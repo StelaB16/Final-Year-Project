@@ -16,16 +16,21 @@ class login extends StatefulWidget {
 
 class _loginState extends State<login> {
 
+  //Text fields for user input
   TextEditingController email=TextEditingController();
   TextEditingController password=TextEditingController();
 
+  //Function to sign in with Firebase
   signIn() async {
     try {
       await FirebaseAuth.instance.signInWithEmailAndPassword(
-        email: email.text.trim(),
+        email: email.text.trim(), //Removes extra spacing
         password: password.text.trim(),
       );
+      //If login is successful firebase updates the authstate
+      //The wrapper.dart file listenes for this change and movesthe user to the homepage
     } on FirebaseAuthException catch (e) {
+      //Shows error message if login fails
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(e.message ?? "Login failed")),
       );
@@ -54,7 +59,7 @@ class _loginState extends State<login> {
             child: SingleChildScrollView(
                 padding: const EdgeInsets.all(20.0),
                 child: Card(
-                  elevation: 6,
+                  elevation: 6, //Shadow
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
                   child: Padding(
                     padding: const EdgeInsets.all(24.0),
@@ -90,7 +95,7 @@ class _loginState extends State<login> {
                           ),
                         ),
 
-
+                        //Login Button
                         ElevatedButton(
                           onPressed: signIn,
                           style: ElevatedButton.styleFrom(
@@ -106,7 +111,7 @@ class _loginState extends State<login> {
                             ),
                           ),
                         ),
-
+                        //Forgot password link
                         TextButton(
                           onPressed: () => Get.to(() => const Forgot()),
                           child: Text(
@@ -118,6 +123,7 @@ class _loginState extends State<login> {
                           ),
                         ),
                         const SizedBox(height: 10),
+                        //Take user to sign up page
                         OutlinedButton(
                           onPressed: () => Get.to(() => const signup()),
                           style: OutlinedButton.styleFrom(

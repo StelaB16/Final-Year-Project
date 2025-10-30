@@ -17,6 +17,7 @@ class _signupState extends State<signup> {
   TextEditingController email=TextEditingController();
   TextEditingController password=TextEditingController();
 
+  //Function to create a new user in firebase
   signup()async{
     await FirebaseAuth.instance.createUserWithEmailAndPassword(email: email.text, password: password.text);
     Get.offAll(wrapper());

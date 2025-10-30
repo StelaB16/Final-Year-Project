@@ -15,12 +15,15 @@ class _wrapperState extends State<wrapper> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      //StreamBuilder keeps listening for user login/logout changes
       body: StreamBuilder(
           stream: FirebaseAuth.instance.authStateChanges(),
           builder: (context, snapshot){
+            //If the user is logged in go to homepage
             if (snapshot.hasData){
               return homepage();
             }else{
+              //if not logged in go to login page
               return login();
             }
           }),

@@ -9,9 +9,10 @@ class homepage extends StatefulWidget {
 }
 
 class _homepageState extends State<homepage> {
-
+//Get the current logged in user
   final user=FirebaseAuth.instance.currentUser;
 
+  //Function to sign up
   signout()async{
     await FirebaseAuth.instance.signOut();
   }
@@ -27,6 +28,6 @@ class _homepageState extends State<homepage> {
           onPressed: (()=>signout()),
           child: Icon(Icons.login_rounded),
     ),
-    ); //scaffolf
+    );
   }
 }
