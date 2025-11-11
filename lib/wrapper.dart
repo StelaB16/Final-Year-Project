@@ -1,6 +1,7 @@
-import 'package:final_year_project/homepage.dart';
 import 'package:final_year_project/login.dart';
 import 'package:final_year_project/main.dart';
+import 'package:final_year_project/parent_homepage.dart';
+import 'package:final_year_project/parent_homepage.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -48,8 +49,8 @@ class _wrapperState extends State<wrapper> {
                   return const ChildSetup();
                 }
 
-                //If child exists, go to homepage
-                return const homepage();
+                //If child exists, go to parent dash board
+                return const ParentHomePage();
               },
             );
          }

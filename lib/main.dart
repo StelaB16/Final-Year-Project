@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import "package:get/get.dart";
 import 'package:final_year_project/wrapper.dart';
 import 'package:flutter/material.dart';
@@ -8,6 +9,7 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   //Firebase connection to the app
   await Firebase.initializeApp();
+  await FirebaseAuth.instance.signOut();
   runApp(const MyApp());
 
 }

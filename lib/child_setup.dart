@@ -84,20 +84,23 @@ class _ChildSetupState extends State<ChildSetup> {
 
   // Save child's information to Firestore
   Future<void> _saveProfile() async {
-    final user = FirebaseAuth.instance.currentUser;
-    if (user == null) {
+    final parent  = FirebaseAuth.instance.currentUser;
+    if (parent == null) {
       _snack("You’re not signed in.");
       return;
     }
 
-    // Create a child record inside the logged-in user's document
     try {
-      print("Saving child profile for user: ${user.uid}");
-      await FirebaseFirestore.instance
-          .collection('users')
-          .doc(user.uid)
-          .collection('children')
-          .add({
+      // 1) making a new doc id for the child in the main users collection
+      final childDocRef = FirebaseFirestore.instance.collection('users').doc();
+      final childId = childDocRef.id;
+
+      print("Creating child profile with ID: $childId for parent: ${parent.uid}");
+
+      // 2) saving the full child data in users/{childId}
+      await childDocRef.set({
+        'role': 'child',
+        'parentId': parent.uid,
         'childName': nameController.text.trim(),
         'age': selectedAge,
         'readingLevel': readingLevel,
@@ -109,15 +112,29 @@ class _ChildSetupState extends State<ChildSetup> {
         'motivation': selectedMotivation,
         'createdAt': FieldValue.serverTimestamp(),
       });
-      print("Child profile saved successfully");
+      print("Child profile created in users/$childId");
 
-      await Future.delayed(const Duration(milliseconds: 500));
+      // 3) also adding a link under the parent -> users/{parent}/children/{childId}
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(parent.uid)
+          .collection('children')
+          .doc(childDocRef.id)
+          .set({
+        'childId': childDocRef.id,
+        'childName': nameController.text.trim(),
+        'createdAt': FieldValue.serverTimestamp(),
+      });
+      print("Link created under parent ${parent.uid}/children/$childId");
 
-      // After saving, go to the Homepage
+      // small pause
+      await Future.delayed(const Duration(milliseconds: 250));
+
+      // 4) go back to wrapper so it can decide where to go
       Get.offAll(() => const wrapper());
     } catch (e) {
       print("Error saving profile: $e");
-      _snack("Failed to save profile. Please try again.");
+      _snack("Failed to save profile");
     }
   }
 
