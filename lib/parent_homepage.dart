@@ -7,12 +7,13 @@ class ParentHomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    //get the current logged in parent
     final user = FirebaseAuth.instance.currentUser;
     if (user == null) {
       return const Scaffold(body: Center(child: Text("Not logged in")));
     }
 
-    // 1) listen to the list of child links
+    // listen to the list of child links
     return Scaffold(
       appBar: AppBar(title: const Text("Parent dashboard")),
       body: StreamBuilder<QuerySnapshot>(
@@ -22,6 +23,7 @@ class ParentHomePage extends StatelessWidget {
             .collection('children')
             .snapshots(),
         builder: (context, snapshot) {
+          //Handle loading, errors and empty lists
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
           }
@@ -37,7 +39,7 @@ class ParentHomePage extends StatelessWidget {
               final link = childLinks[index];
               final childId = link.id;
 
-              // 2) for each child link, load the actual child doc
+              // for each child link, load the actual child doc
               return FutureBuilder<DocumentSnapshot>(
                 future: FirebaseFirestore.instance
                     .collection('users')
@@ -51,9 +53,9 @@ class ParentHomePage extends StatelessWidget {
                     return const ListTile(title: Text("Child not found"));
                   }
 
-                  final data =
-                  childSnap.data!.data() as Map<String, dynamic>;
+                  final data = childSnap.data!.data() as Map<String, dynamic>;
 
+                  //Show the childs info
                   return Card(
                     margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
