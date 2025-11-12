@@ -1,4 +1,3 @@
-import 'package:final_year_project/wrapper.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -26,7 +25,7 @@ class _signupState extends State<signup> {
       UserCredential userCred = await FirebaseAuth.instance.createUserWithEmailAndPassword(email: email.text.trim(), password: password.text.trim());
 
   // Save the user's info in Firestore under "users" collection
-    await FirebaseFirestore.instance.collection('users').doc(userCred.user!.uid).set({'email': email.text.trim(), 'createdAt': FieldValue.serverTimestamp(),});
+    await FirebaseFirestore.instance.collection('users').doc(userCred.user!.uid).set({'email': email.text.trim(),'role': 'parent', 'createdAt': FieldValue.serverTimestamp(),});
 
   //After signing up go to ChildSetup screen
     Get.offAll(() => const ChildSetup());
