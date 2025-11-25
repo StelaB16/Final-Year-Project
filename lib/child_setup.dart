@@ -91,16 +91,17 @@ class _ChildSetupState extends State<ChildSetup> {
     }
 
     try {
-      // 1) making a new doc id for the child in the main users collection
-      final childDocRef = FirebaseFirestore.instance.collection('users').doc();
-      final childId = childDocRef.id;
+      final childRef = FirebaseFirestore.instance
+          .collection('users')
+          .doc(parent.uid)
+          .collection('children')
+          .doc();
+      final childId = childRef.id;
 
-      print("Creating child profile with ID: $childId for parent: ${parent.uid}");
+      print("Creating child profile $childId under parent ${parent.uid}");
 
-      // 2) saving the full child data in users/{childId}
-      await childDocRef.set({
-        'role': 'child',
-        'parentId': parent.uid,
+      // saving the full child profile
+      await childRef.set({
         'childName': nameController.text.trim(),
         'age': selectedAge,
         'readingLevel': readingLevel,
@@ -112,25 +113,13 @@ class _ChildSetupState extends State<ChildSetup> {
         'motivation': selectedMotivation,
         'createdAt': FieldValue.serverTimestamp(),
       });
-      print("Child profile created in users/$childId");
 
-      // 3) also adding a link under the parent -> users/{parent}/children/{childId}
-      await FirebaseFirestore.instance
-          .collection('users')
-          .doc(parent.uid)
-          .collection('children')
-          .doc(childDocRef.id)
-          .set({
-        'childId': childDocRef.id,
-        'childName': nameController.text.trim(),
-        'createdAt': FieldValue.serverTimestamp(),
-      });
-      print("Link created under parent ${parent.uid}/children/$childId");
+      print("Child saved under users/${parent.uid}/children/$childId");
 
       // small pause
       await Future.delayed(const Duration(milliseconds: 250));
 
-      // 4) go back to wrapper so it can decide where to go
+      //go back to wrapper so it can decide where to go
       Get.offAll(() => const wrapper());
     } catch (e) {
       print("Error saving profile: $e");
