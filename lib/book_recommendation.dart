@@ -30,7 +30,7 @@ class _BookRecommendationScreenState
 
   Future<void> loadBooks() async {
     final results = await BookApi.getBooks(
-      age: widget.age.toString(),
+      age: widget.age,
       interest: widget.interest,
     );
 

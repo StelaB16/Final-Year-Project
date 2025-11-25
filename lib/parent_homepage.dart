@@ -82,9 +82,12 @@ class ParentHomePage extends StatelessWidget {
               return FutureBuilder<DocumentSnapshot>(
                 future: FirebaseFirestore.instance
                     .collection('users')
+                    .doc(user.uid)
+                    .collection('children')
                     .doc(childId)
                     .get(),
                 builder: (context, childSnap) {
+
                   if (childSnap.connectionState == ConnectionState.waiting) {
                     return const ListTile(title: Text("Loading child..."));
                   }

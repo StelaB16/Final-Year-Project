@@ -13,18 +13,6 @@ Map<String, List<String>> ageCategoryMap = {
   "12": ["middle grade", "young adult beginner", "pre-teen fiction", "junior fantasy"],
 };
 
-String refineInterest(String raw) {
-  raw = raw.toLowerCase();
-
-  if (raw.contains("sport")) return "children sports fiction";
-  if (raw.contains("space")) return "kids space adventure";
-  if (raw.contains("animal")) return "children animal stories";
-  if (raw.contains("mystery")) return "kids mystery books";
-  if (raw.contains("adventure")) return "children adventure fiction";
-
-  return "children books";
-}
-
 class BookApi {
   static Future<List<Book>> getBooks({
     required String age,
