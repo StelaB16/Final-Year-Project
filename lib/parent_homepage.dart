@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'book_recommendation.dart';
 
 class ParentHomePage extends StatelessWidget {
   const ParentHomePage({super.key});
@@ -123,67 +124,36 @@ class ParentHomePage extends StatelessWidget {
                           ),
                         );
                       },
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Container(
-                            constraints: const BoxConstraints(
-                              minWidth: 75,
-                              minHeight: 120,
-                            ),
-                            margin: const EdgeInsets.all(15.0),
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(5),
-                              border: Border.all(style: BorderStyle.none),
-                              image: const DecorationImage(
-                                fit: BoxFit.cover,
-                                image: AssetImage(
-                                  "assets/images/google-books-to-pdf-1024x576.png",
+                      child: ListTile(
+                        title: Text(
+                          data['childName'] ?? 'Unknown child',
+                          style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                        ),
+                        subtitle: Text(
+                          "Age: ${data['age']}\n"
+                              "Reading level: ${data['readingLevel']}\n"
+                              "Interests: ${(data['interests'] as List?)?.join(', ')}",
+                        ),
+                        trailing: ElevatedButton(
+                          onPressed: () {
+                            final String age = data["age"].toString();
+                            final List interests = data["interests"] ?? [];
+
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => BookRecommendationScreen(
+                                    age: age,
+                                    interest: interests.isNotEmpty ? interests.first : "children"
                                 ),
                               ),
-                            ),
-                          ),
-                          Expanded(
-                            child: Column(
-                              children: [
-                                Container(
-                                  alignment: Alignment.bottomLeft,
-                                  padding: const EdgeInsets.only(
-                                    top: 15,
-                                    right: 15,
-                                  ),
-                                  child: const Text(
-                                    "Lean UX: Applying Lean Principles to Improve User Experience",
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                ),
-                                Container(
-                                  alignment: Alignment.bottomLeft,
-                                  margin: const EdgeInsets.only(top: 5, right: 15),
-                                  child: const Text(
-                                    "Josh Haze",
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.normal,
-                                    ),
-                                  ),
-                                ),
-                                Container(
-                                  margin: const EdgeInsets.only(top: 10, right: 15),
-                                  alignment: Alignment.bottomLeft,
-                                  child: Text(
-                                    "Continue Reading",
-                                    style: TextStyle(
-                                      color: Colors.black,
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
+                            );
+                          },
+                          child: const Text("Get Books"),
+                        ),
+
                       ),
+
                     ),
                   );
                 },

@@ -1,3 +1,4 @@
+import 'package:final_year_project/book_recommendation.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import "package:get/get.dart";
 import 'package:final_year_project/wrapper.dart';
@@ -25,10 +26,29 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       theme: ThemeData(primarySwatch: Colors.blue),
       home: wrapper(),
+
+      routes: {
+        "/bookRecommendations": (context) {
+          final args = ModalRoute.of(context)!.settings.arguments as Map;
+
+          final String age = args["age"].toString();
+
+          // safely get first interest
+          final List interests = args["interests"] ?? [];
+          final String interest =
+          interests.isNotEmpty ? interests.first.toString() : "children";
+
+          return BookRecommendationScreen(
+            age: age,
+            interest: interest,
+          );
+        },
+      },
+
+
     );
   }
 }
-
 //Just used to test firebase connection
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key, required this.title});

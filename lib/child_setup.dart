@@ -212,7 +212,6 @@ class _ChildSetupState extends State<ChildSetup> {
     );
   }
 
-  // --- Step 1 Page ---
   Widget _page1() {
     return _StepCard(
       color: card,
@@ -351,7 +350,6 @@ class _ChildSetupState extends State<ChildSetup> {
     );
   }
 
-  // --- Step 3 Page ---
   Widget _page3() {
     final interestOptions = [
       "Animals",
@@ -426,7 +424,7 @@ class _ChildSetupState extends State<ChildSetup> {
     );
   }
 
-  // --- Screen layout and buttons ---
+  //Screen layout and buttons
   @override
   Widget build(BuildContext context) {
     return Scaffold(
