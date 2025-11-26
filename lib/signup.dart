@@ -19,7 +19,7 @@ class _signupState extends State<signup> {
   TextEditingController password=TextEditingController();
 
   //Function to create a new user in firebase
-  signup() async {
+  registerUser() async {
     try {
       final userCred = await FirebaseAuth.instance.createUserWithEmailAndPassword(
         email: email.text.trim(),
@@ -120,7 +120,7 @@ class _signupState extends State<signup> {
 
 
                         ElevatedButton(
-                          onPressed: signup,
+                          onPressed: registerUser,
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.blueAccent,
                             minimumSize: const Size(double.infinity, 50),

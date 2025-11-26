@@ -1,6 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:final_year_project/book_recommendation.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import "package:get/get.dart";
 import 'package:final_year_project/wrapper.dart';
 import 'package:flutter/material.dart';
