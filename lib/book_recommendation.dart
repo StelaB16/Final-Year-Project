@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:final_year_project/services/Download_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -116,18 +118,22 @@ class _BookRecommendationScreenState
               trailing: IconButton(
                 icon: const Icon(Icons.download),
                 onPressed: () async {
-                  final bookId = "${book.title}_${DateTime.now().millisecondsSinceEpoch}";
-                  final filePath = book.previewLink != null
-                      ? await DownloadService.downloadPdf(book.previewLink!, bookId)
-                      : null;
+                  try {
+                    final bookId = "${book.title}_${DateTime
+                        .now()
+                        .millisecondsSinceEpoch}";
+                    final filePath = book.previewLink != null
+                        ? await DownloadService.downloadPdf(book.previewLink!,
+                        bookId)
+                        : null;
 
-                  await saveBookToFirebase(book, filePath);
-
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text("Book added to My Books")),
-                  );
+                    await saveBookToFirebase(book, filePath);
+                  }catch (e) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text("Book added to My Books")),
+                    );
+                  }
                 },
-
               ),
             ),
           );
