@@ -1,16 +1,18 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:final_year_project/book_recommendation.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import "package:get/get.dart";
 import 'package:final_year_project/wrapper.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 
+import 'firebase_options.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   //Firebase connection to the app
-  await Firebase.initializeApp();
-  await FirebaseAuth.instance.signOut();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
   runApp(const MyApp());
 
 }
@@ -25,7 +27,7 @@ class MyApp extends StatelessWidget {
       title: 'Final Year Project',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(primarySwatch: Colors.blue),
-      home: wrapper(),
+      home: const wrapper(),
 
       routes: {
         "/bookRecommendations": (context) {
@@ -38,9 +40,12 @@ class MyApp extends StatelessWidget {
           final String interest =
           interests.isNotEmpty ? interests.first.toString() : "children";
 
+          final String childId = args["childId"];
+
           return BookRecommendationScreen(
             age: age,
             interest: interest,
+            childId: childId,
           );
         },
       },

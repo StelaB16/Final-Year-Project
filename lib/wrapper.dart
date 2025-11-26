@@ -19,14 +19,20 @@ class _wrapperState extends State<wrapper> {
       //StreamBuilder keeps listening for user login/logout changes
       body: StreamBuilder(
           stream: FirebaseAuth.instance.authStateChanges(),
-          builder: (context, snapshot){
-            //If the user is logged in go to homepage
-            if (snapshot.data == null){
+          builder: (context, snapshot) {
+            // Wait for authentication to load
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Center(child: CircularProgressIndicator());
+            }
+
+            final User? user = snapshot.data;
+
+            // If no user logged in → go to login
+            if (user == null) {
               return const login();
             }
 
-            //if logged in check firebase for child profile
-            final user = snapshot.data!;
+            // User logged in → check if they have any children
             return FutureBuilder<QuerySnapshot>(
               future: FirebaseFirestore.instance
                   .collection('users')
@@ -39,19 +45,20 @@ class _wrapperState extends State<wrapper> {
                 }
 
                 if (childSnap.hasError) {
-                  return Center(child: Text("Error loading data"));
+                  return const Center(child: Text("Error loading data"));
                 }
 
-                //If no children exist, go to setup
+                // No children → go to Child Setup
                 if (!childSnap.hasData || childSnap.data!.docs.isEmpty) {
                   return const ChildSetup();
                 }
 
-                //If child exists, go to parent dash board
+                // Children exist → go to Parent Home Page
                 return const ParentHomePage();
               },
             );
-         }
+          }
+
        ),
     );
   }

@@ -10,6 +10,7 @@ class ParentHomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     //get the current logged in parent
     final user = FirebaseAuth.instance.currentUser;
+
     if (user == null) {
       return const Scaffold(body: Center(child: Text("Not logged in")));
     }
@@ -32,8 +33,8 @@ class ParentHomePage extends StatelessWidget {
                 builder: (context) => AlertDialog(
                   title: const Text("Parent Profile"),
                   content: Text(
-                    "Logged in as: ${user?.email}",
-                    style: const TextStyle(fontSize: 24),
+                    "Logged in as: ${user.email}",
+                    style: const TextStyle(fontSize: 20),
                   ),
                   actions: [
                     TextButton(
@@ -62,7 +63,6 @@ class ParentHomePage extends StatelessWidget {
             .collection('children')
             .snapshots(),
         builder: (context, snapshot) {
-          //Handle loading, errors and empty lists
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
           }

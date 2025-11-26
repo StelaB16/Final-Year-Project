@@ -84,7 +84,7 @@ class _ChildSetupState extends State<ChildSetup> {
 
   // Save child's information to Firestore
   Future<void> _saveProfile() async {
-    final parent  = FirebaseAuth.instance.currentUser;
+    final parent = FirebaseAuth.instance.currentUser;
     if (parent == null) {
       _snack("You’re not signed in.");
       return;
@@ -100,7 +100,6 @@ class _ChildSetupState extends State<ChildSetup> {
 
       print("Creating child profile $childId under parent ${parent.uid}");
 
-      // saving the full child profile
       await childRef.set({
         'childName': nameController.text.trim(),
         'age': selectedAge,
@@ -114,18 +113,16 @@ class _ChildSetupState extends State<ChildSetup> {
         'createdAt': FieldValue.serverTimestamp(),
       });
 
-      print("Child saved under users/${parent.uid}/children/$childId");
+      print("Child saved at users/${parent.uid}/children/$childId");
 
-      // small pause
-      await Future.delayed(const Duration(milliseconds: 250));
-
-      //go back to wrapper so it can decide where to go
+      // go back so wrapper decides where to go
       Get.offAll(() => const wrapper());
     } catch (e) {
       print("Error saving profile: $e");
       _snack("Failed to save profile");
     }
   }
+
 
   // Go to next page or finish setup
   void _next() async {
