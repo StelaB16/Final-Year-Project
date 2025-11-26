@@ -1,3 +1,6 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:final_year_project/services/Download_service.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../services/book_api.dart';
@@ -5,11 +8,13 @@ import '../services/book_api.dart';
 class BookRecommendationScreen extends StatefulWidget {
   final String age;
   final String interest;
+  final String childId;
 
   const BookRecommendationScreen({
     super.key,
     required this.age,
     required this.interest,
+    required this.childId,
   });
 
   @override
@@ -47,6 +52,36 @@ class _BookRecommendationScreenState
     }
   }
 
+  Future<void> saveBookToFirebase(Book book, String? filePath) async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) return;
+
+    final parentId = user.uid;
+    final childId = widget.childId;
+
+    // create unique book ID based on timestamp
+    final bookId = DateTime.now().millisecondsSinceEpoch.toString();
+
+    final ref = FirebaseFirestore.instance
+        .collection('users')
+        .doc(parentId)
+        .collection('children')
+        .doc(childId)
+        .collection('myBooks')
+        .doc(bookId);
+
+    await ref.set({
+      'title': book.title,
+      'authors': book.authors,
+      'thumbnail': book.thumbnail,
+      'previewLink': book.previewLink,
+      'filePath': filePath,      // ✔ matches MyBooksScreen
+      'bookId': bookId,
+      'downloadedAt': FieldValue.serverTimestamp(),
+    });
+  }
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -80,9 +115,19 @@ class _BookRecommendationScreenState
               subtitle: Text(author),
               trailing: IconButton(
                 icon: const Icon(Icons.download),
-                onPressed: previewLink == null
-                    ? null
-                    : () => _openLink(previewLink),
+                onPressed: () async {
+                  final bookId = "${book.title}_${DateTime.now().millisecondsSinceEpoch}";
+                  final filePath = book.previewLink != null
+                      ? await DownloadService.downloadPdf(book.previewLink!, bookId)
+                      : null;
+
+                  await saveBookToFirebase(book, filePath);
+
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text("Book added to My Books")),
+                  );
+                },
+
               ),
             ),
           );

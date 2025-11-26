@@ -19,28 +19,40 @@ class _signupState extends State<signup> {
   TextEditingController password=TextEditingController();
 
   //Function to create a new user in firebase
-  signup()async{
+  signup() async {
     try {
-  //create a new user in Firebase and add them to firestore
-      UserCredential userCred = await FirebaseAuth.instance.createUserWithEmailAndPassword(email: email.text.trim(), password: password.text.trim());
+      final userCred = await FirebaseAuth.instance.createUserWithEmailAndPassword(
+        email: email.text.trim(),
+        password: password.text.trim(),
+      );
 
-  // Save the user's info in Firestore under "users" collection
-    await FirebaseFirestore.instance.collection('users').doc(userCred.user!.uid).set({'email': email.text.trim(),'role': 'parent', 'createdAt': FieldValue.serverTimestamp(),});
+      final uid = userCred.user!.uid;
 
-  //After signing up go to ChildSetup screen
-    Get.offAll(() => const ChildSetup());
-  } on FirebaseAuthException catch (e) {
-  // Show Firebase errors (like invalid email or weak password)
-  ScaffoldMessenger.of(context).showSnackBar(
-  SnackBar(content: Text(e.message ?? "Signup failed")),
-  );
-  } catch (e) {
-  //unexpected errors
-  ScaffoldMessenger.of(context).showSnackBar(
-  SnackBar(content: Text("Unexpected error: $e")),
-  );
+      // Create parent document in Firestore
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(uid)
+          .set({
+        'email': email.text.trim(),
+        'role': 'parent',
+        'createdAt': FieldValue.serverTimestamp(),
+      });
+
+      // Send user to child setup flow
+      Get.offAll(() => const ChildSetup());
+    }
+    on FirebaseAuthException catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(e.message ?? "Signup failed")),
+      );
+    }
+    catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Unexpected error: $e")),
+      );
+    }
   }
-}
+
 
   @override
   Widget build(BuildContext context) {
