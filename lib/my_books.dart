@@ -2,7 +2,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:open_filex/open_filex.dart';
+import 'epub_viewer_screen.dart';
 
 class MyBooksScreen extends StatelessWidget {
   final String childId;
@@ -11,6 +11,7 @@ class MyBooksScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    //get current logged in user
     final user = FirebaseAuth.instance.currentUser;
 
     return Scaffold(
@@ -33,20 +34,26 @@ class MyBooksScreen extends StatelessWidget {
             return const Center(child: Text("No downloaded books yet"));
           }
 
+          //get the list of book doc
           final books = snapshot.data!.docs;
+
+          if (books.isEmpty) {
+            return const Center(child: Text("No downloaded books yet"));
+          }
 
           return ListView.builder(
             itemCount: books.length,
             itemBuilder: (context, index) {
               final data = books[index].data() as Map<String, dynamic>;
               final title = data["title"];
-              final author = data["authors"];
+              final authorData = data["authors"];
+              final author = (authorData is List) ? authorData.join(", ") : authorData;
               final localPath = data["filePath"];
 
               return ListTile(
                 title: Text(title ?? "Unknown title"),
                 subtitle: Text(author ?? "Unknown author"),
-                trailing: const Icon(Icons.picture_as_pdf),
+                trailing: const Icon(Icons.menu_book),
                 onTap: () async {
                   if (localPath == null) {
                     ScaffoldMessenger.of(context).showSnackBar(
@@ -63,12 +70,20 @@ class MyBooksScreen extends StatelessWidget {
                     return;
                   }
 
-                  OpenFilex.open(localPath);
+                  // Open the EPUB reader screen
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => EpubViewerScreen(filePath: localPath),
+                    ),
+                  );
+                },
 
-                  },
+
               );
             },
           );
+
         },
       ),
     );

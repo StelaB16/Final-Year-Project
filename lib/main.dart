@@ -4,6 +4,7 @@ import "package:get/get.dart";
 import 'package:final_year_project/wrapper.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 import 'firebase_options.dart';
 void main() async {
@@ -12,6 +13,9 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+
+  await FirebaseAuth.instance.signOut();
+
   runApp(const MyApp());
 
 }
@@ -34,7 +38,6 @@ class MyApp extends StatelessWidget {
 
           final String age = args["age"].toString();
 
-          // safely get first interest
           final List interests = args["interests"] ?? [];
           final String interest =
           interests.isNotEmpty ? interests.first.toString() : "children";
@@ -79,7 +82,6 @@ class _MyHomePageState extends State<MyHomePage> {
       body: Center(
         child: ElevatedButton(
           onPressed: () async {
-            // Example test: get current user or test Firestore write
             await FirebaseFirestore.instance
                 .collection('test')
                 .add({'timestamp': DateTime.now()});

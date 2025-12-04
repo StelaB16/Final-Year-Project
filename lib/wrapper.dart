@@ -27,12 +27,12 @@ class _wrapperState extends State<wrapper> {
 
             final User? user = snapshot.data;
 
-            // If no user logged in → go to login
+            // If no user logged in, go to login
             if (user == null) {
               return const login();
             }
 
-            // User logged in → check if they have any children
+            // User logged in check if they have any children
             return FutureBuilder<QuerySnapshot>(
               future: FirebaseFirestore.instance
                   .collection('users')
@@ -48,12 +48,12 @@ class _wrapperState extends State<wrapper> {
                   return const Center(child: Text("Error loading data"));
                 }
 
-                // No children → go to Child Setup
+                // No children, go to Child Setup
                 if (!childSnap.hasData || childSnap.data!.docs.isEmpty) {
                   return const ChildSetup();
                 }
 
-                // Children exist → go to Parent Home Page
+                // Children exist, go to Parent Home Page
                 return const ParentHomePage();
               },
             );

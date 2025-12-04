@@ -6,6 +6,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../services/book_api.dart';
+import 'package:final_year_project/book.dart';
 
 class BookRecommendationScreen extends StatefulWidget {
   final String age;
@@ -26,7 +27,8 @@ class BookRecommendationScreen extends StatefulWidget {
 
 class _BookRecommendationScreenState
     extends State<BookRecommendationScreen> {
-  List<dynamic> books = [];
+  // List of books returned from the API
+  List<Book> books = [];
   bool loading = true;
 
   @override
@@ -35,6 +37,7 @@ class _BookRecommendationScreenState
     loadBooks();
   }
 
+  //ask BookApi for books based on the age and interest, passed from previous screen
   Future<void> loadBooks() async {
     final results = await BookApi.getBooks(
       age: widget.age,
@@ -54,6 +57,7 @@ class _BookRecommendationScreenState
     }
   }
 
+  //saves the selected book to firestore
   Future<void> saveBookToFirebase(Book book, String? filePath) async {
     final user = FirebaseAuth.instance.currentUser;
     if (user == null) return;
@@ -76,19 +80,19 @@ class _BookRecommendationScreenState
       'title': book.title,
       'authors': book.authors,
       'thumbnail': book.thumbnail,
-      'previewLink': book.previewLink,
-      'filePath': filePath,      // ✔ matches MyBooksScreen
+      'epubUrl': book.epubUrl,
+      'filePath': filePath,
       'bookId': bookId,
       'downloadedAt': FieldValue.serverTimestamp(),
     });
   }
-
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text("Recommended Books")),
       body: loading
+      //show loading sspinner
           ? const Center(child: CircularProgressIndicator())
           : books.isEmpty
           ? const Center(child: Text("No books found"))
@@ -100,11 +104,11 @@ class _BookRecommendationScreenState
           final title = book.title;
           final author = book.authors;
           final thumbnail = book.thumbnail;
-          final previewLink = book.previewLink;
 
           return Card(
             margin: const EdgeInsets.all(12),
             child: ListTile(
+              //show a cover immage if theres one otherwise a grey box
               leading: thumbnail != null
                   ? Image.network(thumbnail, fit: BoxFit.cover)
                   : Container(
@@ -119,18 +123,20 @@ class _BookRecommendationScreenState
                 icon: const Icon(Icons.download),
                 onPressed: () async {
                   try {
-                    final bookId = "${book.title}_${DateTime
-                        .now()
-                        .millisecondsSinceEpoch}";
-                    final filePath = book.previewLink != null
-                        ? await DownloadService.downloadPdf(book.previewLink!,
-                        bookId)
+                    //if we have a EpubURL downlaod thee file if not = null
+                    final filePath = book.epubUrl != null
+                        ? await DownloadService.downloadEpub(book.epubUrl!, book.title)
                         : null;
 
+                    //save the book info and filepath to firestore
                     await saveBookToFirebase(book, filePath);
-                  }catch (e) {
+
                     ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text("Book added to My Books")),
+                      const SnackBar(content: Text("Book added to My Books")),
+                    );
+                  } catch (e) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text("Download failed: $e")),
                     );
                   }
                 },

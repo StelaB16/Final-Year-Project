@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:final_year_project/settings_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'book_recommendation.dart';
@@ -23,30 +24,14 @@ class ParentHomePage extends StatelessWidget {
         actions: [
           IconButton(
             icon: const Icon(Icons.account_circle_outlined, size: 40),
-            onPressed: () {
-              showDialog(
-                context: context,
-                builder: (context) => AlertDialog(
-                  title: const Text("Parent Profile"),
-                  content: Text(
-                    "Logged in as: ${user.email}",
-                    style: const TextStyle(fontSize: 20),
-                  ),
-                  actions: [
-                    TextButton(
-                        onPressed: () => Navigator.pop(context),
-                        child: const Text("Close")),
-                    TextButton(
-                      onPressed: () async {
-                        await FirebaseAuth.instance.signOut();
-                        Navigator.pop(context);
-                      },
-                      child: const Text("Logout"),
-                    ),
-                  ],
-                ),
-              );
-            },
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (_) => const SettingsScreen(),
+            ),
+          );
+        },
           ),
         ],
       ),
@@ -72,8 +57,10 @@ class ParentHomePage extends StatelessWidget {
             itemBuilder: (context, index) {
               final childData =
               children[index].data() as Map<String, dynamic>;
+              final age = childData["age"].toString();
+
               final childId = children[index].id;
-              final interests = (childData["interests"] as List?) ?? [];
+              final List interests = (childData["interests"] as List?) ?? [];
 
               return Card(
                 shape: RoundedRectangleBorder(
@@ -91,9 +78,10 @@ class ParentHomePage extends StatelessWidget {
                   ),
                   trailing: ElevatedButton(
                     onPressed: () {
-                      final age = childData["age"].toString();
-                      final interest =
-                      interests.isNotEmpty ? interests.first : "children";
+                      final String age = childData["age"].toString();
+                      final String interest = interests.isNotEmpty
+                          ? interests.first.toString()
+                          : "children";
 
                       Navigator.push(
                         context,
@@ -105,6 +93,7 @@ class ParentHomePage extends StatelessWidget {
                           ),
                         ),
                       );
+
                     },
                     child: const Text("Get Books"),
                   ),
