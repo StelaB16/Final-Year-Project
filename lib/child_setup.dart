@@ -18,7 +18,7 @@ class ChildSetup extends StatefulWidget {
 }
 
 class _ChildSetupState extends State<ChildSetup> {
-  // Controls the pages in the setup flow (3 pages total)
+  // Controls the pages in the setup flow
   final PageController _controller = PageController();
   int _page = 0;
 
@@ -143,7 +143,7 @@ class _ChildSetupState extends State<ChildSetup> {
     }
   }
 
-  // Little dots that show progress at the top
+  // dots that show progress at the top
   Widget _dot(int index) {
     final bool active = index == _page;
     return AnimatedContainer(
@@ -170,7 +170,7 @@ class _ChildSetupState extends State<ChildSetup> {
     style: GoogleFonts.poppins(fontSize: 14, color: Colors.grey[600]),
   );
 
-  // The little selectable option boxes
+  //selectable option boxes
   Widget _chipOption({
     required String label,
     required bool selected,
@@ -251,7 +251,6 @@ class _ChildSetupState extends State<ChildSetup> {
     );
   }
 
-  // --- Step 2 Page ---
   Widget _page2() {
     final challengeOptions = [
       "Sounding out words",
